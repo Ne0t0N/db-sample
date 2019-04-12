@@ -1,5 +1,6 @@
 package com.test.dbsample.v2;
 
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
@@ -39,11 +40,11 @@ public class DatabaseTest {
         assertThat(content).isEqualTo(newValue);
     }
 
-    /*@After
+    @After
     public void tearDown() {
         // Remove created file
         if (!TEST_DB_FILE.delete()) {
             throw new RuntimeException("Was not able to delete a file " + TEST_DB_FILE.getName());
         }
-    }*/
+    }
 }
