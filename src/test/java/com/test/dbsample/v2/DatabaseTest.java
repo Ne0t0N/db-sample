@@ -12,30 +12,58 @@ public class DatabaseTest {
 
     private static final File TEST_DB_FILE = new File("test_db_file.db");
 
-    @Test
-    public void testReadWriteOperations() throws IOException {
-        String key = "ke\ty";
-        String value = "value";
-
-        // 0. Instantiate a Database
+    @Test(expected = IllegalArgumentException.class)
+    public void whenNewLineInKey_shouldThrowIAE() throws IOException {
         Database database = new Database(TEST_DB_FILE);
 
-        // 1. Read non-existing entry
-        String content = database.read(key);
-        assertThat(content).isNull();
+        database.write("ke\ny", "value");
+    }
 
-        // 2. Write entry
+    @Test(expected = IllegalArgumentException.class)
+    public void whenNewLineInValue_shouldThrowIAE() throws IOException {
+        Database database = new Database(TEST_DB_FILE);
+
+        database.write("key", "val\nue");
+    }
+
+    @Test
+    public void whenNoKeyValuePair_shouldReturnNull() throws IOException {
+        Database database = new Database(TEST_DB_FILE);
+
+        String actualValue = database.read("some key");
+        assertThat(actualValue).isNull();
+    }
+
+    @Test
+    public void testReadWriteOperations() throws IOException {
+        Database database = new Database(TEST_DB_FILE);
+        String key = "some key";
+        String value = "some value";
+
         database.write(key, value);
 
-        // 3. Read entry and make sure it matches expected
-        content = database.read(key);
+        String actualValue = database.read(key);
+        assertThat(actualValue).isEqualTo(value);
+    }
+
+    @Test
+    public void testUpdateOperation() throws IOException {
+        Database database = new Database(TEST_DB_FILE);
+        String key = "key";
+        String value = "value";
+
+        // 1. Write entry
+        database.write(key, value);
+
+        // 2. Read entry and make sure it matches expected
+        String content = database.read(key);
         assertThat(content).isEqualTo(value);
 
-        // 4. Update entry (write another entry with the same key)
+        // 3. Update entry (write another entry with the same key)
         String newValue = "newValue";
         database.write(key, newValue);
 
-        // 5. Read updated entry and make sure it matches expected
+        // 4. Read updated entry and make sure it matches expected
         content = database.read(key);
         assertThat(content).isEqualTo(newValue);
     }

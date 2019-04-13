@@ -36,6 +36,10 @@ public class Database {
     }
 
     public void write(String key, String value) {
+        if (key.contains("\n") || value.contains("\n")) {
+            throw new IllegalArgumentException("New line characters in keys or values are prohibited");
+        }
+
         try (BufferedWriter out = new BufferedWriter(new FileWriter(dbFile, true))) {
             out.write(String.join(DELIMITER, sizePrefixedKey(key), value));
             out.newLine();
